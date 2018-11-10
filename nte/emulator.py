@@ -1,8 +1,6 @@
 import json
 import logging
 import subprocess
-import xml.etree.ElementTree as ET
-import copy
 import ipaddress
 
 from nte.utils import printErrorAndExit
@@ -14,20 +12,20 @@ from nte.topology import Topology
 
 logger = logging.getLogger(__name__)
 
+
 class Emulator(metaclass=Singleton):
 
-    def __init__(self, topologyFileName = None, xmlConfigFile = None, configFileName = None):
+    def __init__(self, topologyFileName = None, configFileName = None):
         self.networkElementList = []
         self.neNamesList = []
         self.topologies = []
         self.controllerList = []
         self.topoJson = None
         self.configJson = None
-        self.xmlConfigFile = xmlConfigFile
+        self.xmlConfigFile = 'yang/microwave-model-config.xml'
+        self.xmlStatusFile = 'yang/microwave-model-status.xml'
         self.xmlStatusFile = None
         self.registerToOdl = False
-        if xmlConfigFile is not None:
-            self.xmlStatusFile = xmlConfigFile.replace("config", "status")
 
         if topologyFileName is not None:
             try:

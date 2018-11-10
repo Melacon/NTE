@@ -23,7 +23,6 @@ class EmulatorRunner():
         self.args = None
         self.validate = None
         self.topologyJsonFile = None
-        self.xmlConfigFile = None
         self.configJsonFile = None
 
         self.parseArgs()
@@ -35,18 +34,11 @@ class EmulatorRunner():
         else:
             raise Exception('could not find JSON topology file: %s' % value)
 
-    def saveXmlConfigFile(self, _option, _opt_str, value, _parser ):
-        if os.path.isfile(value):
-            self.xmlConfigFile = value
-        else:
-            raise Exception('could not find XML configuration file: %s' % value)
-
     def saveConfigJsonFile(self, _option, _opt_str, value, _parser ):
         if os.path.isfile(value):
             self.configJsonFile = value
         else:
             raise Exception('could not find JSON configuration file: %s' % value)
-
 
     def parseArgs(self):
         desc = ("The %prog utility creates a wireless transport topology emulation from the JSON \n"
@@ -64,11 +56,6 @@ class EmulatorRunner():
                         callback=self.saveTopoJsonFile,
                         type='string',
                         help='the file containig the JSON topology'
-                        )
-        opts.add_option('--xml', '-x', action='callback',
-                        callback=self.saveXmlConfigFile,
-                        type='string',
-                        help='the file containig the XML configuration for the NE'
                         )
         opts.add_option('--config', action='callback',
                         callback=self.saveConfigJsonFile,
@@ -95,32 +82,19 @@ class EmulatorRunner():
             exit()
 
         logger.debug("############ Starting emulator...############")
-        if self.xmlConfigFile is None:
-            print("XML configuration file not specified")
-            exit()
 
         if self.topologyJsonFile is None:
             print("JSON topology file not specified")
             exit()
 
-        e = Emulator(topologyFileName = self.topologyJsonFile, xmlConfigFile = self.xmlConfigFile, configFileName = self.configJsonFile)
+        e = Emulator(topologyFileName = self.topologyJsonFile, configFileName = self.configJsonFile)
         start = timer()
-        #cmd = 'df -k | grep "/$" | awk \'{print $4}\''
-        #output = e.executeCommandAndGetResultInOS(cmd)
-        #for line in output:
-        #    startFreeStorage = int(line)
-        #    break
 
         e.startEmulator()
         end = timer()
-        #output = e.executeCommandAndGetResultInOS(cmd)
-        #for line in output:
-        #    endFreeStorage = int(line)
-        #    break
 
         print("Emulator started successfully!")
         print("Boot time: %6.3f seconds" % (end - start))
-        #print("Disk storage used by the emulator: %3.3f MB" % ((startFreeStorage - endFreeStorage) / 1000.0))
         CLI(e)
 
 
