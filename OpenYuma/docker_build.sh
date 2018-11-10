@@ -1,0 +1,1 @@
+docker build -t openyumante .; docker image prune -f
